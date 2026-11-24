@@ -3,7 +3,7 @@
   "modulo": "requisicoes",
   "pastasPermitidas": [
     "src/modules/requisicoes/",
-    "src/app/requisicoes/",
+    "src/app/(app)/requisicoes/",
     "tests/modules/requisicoes/"
   ],
   "testes": ["tests/modules/requisicoes"]

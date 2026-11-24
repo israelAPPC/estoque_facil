@@ -78,6 +78,7 @@ function acharClaude(): string {
   for (const c of candidatos) {
     const t = spawnSync(c, ["--version"], {
       shell: true,
+      windowsHide: true,
       encoding: "utf8",
       timeout: 20_000,
     });
@@ -94,6 +95,7 @@ function resumir(conversa: string): string {
     ["-p", "--model", config.modeloResumo, "--tools", '""'],
     {
       input: PROMPT + conversa,
+      windowsHide: true,
       encoding: "utf8",
       shell: true,
       cwd: tmpdir(), // fora do projeto: não carrega CLAUDE.md, agent principal nem hooks

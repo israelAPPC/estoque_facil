@@ -84,7 +84,7 @@ async function chamar(chave, modelo, caminho, corpo) {
     if (!resp.ok) {
       // não repete o corpo da resposta (pode conter eco da requisição): só o status
       falhar(
-        `a API respondeu HTTP ${resp.status}${resp.status === 400 || resp.status === 403 ? " (confira a chave e o modelo " + modelo + ")" : ""}.`,
+        `a API respondeu HTTP ${resp.status}${resp.status === 400 || resp.status === 403 ? ` (confira a chave e o modelo ${modelo})` : ""}.`,
       );
     }
     return await resp.json();

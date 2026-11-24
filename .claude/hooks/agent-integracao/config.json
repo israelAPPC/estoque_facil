@@ -6,7 +6,10 @@
     "tests/e2e/",
     "next.config.mjs",
     "docs/deploy.md",
-    "docs/modulos/"
+    "docs/modulos/",
+    "src/components/",
+    "tests/components/",
+    "tests/config/"
   ],
   "testes": ["tests/app", "tests/e2e"]
 }

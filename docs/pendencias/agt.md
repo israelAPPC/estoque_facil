@@ -50,3 +50,4 @@ O orquestrador roda em Opus (custo maior por sessão). Se pesar, trocar `model: 
 **P3 · DÉBITO** · origem: 2026-11-24
 
 Os squads usados pelo consultor-squad estão em C:/Users/israe/OneDrive/Desktop/Projetos Israel/Sistemas/criador_site/squads, fora do projeto; o caminho é absoluto e não funciona em outra máquina. Decidir se copia o necessário para o projeto.
+

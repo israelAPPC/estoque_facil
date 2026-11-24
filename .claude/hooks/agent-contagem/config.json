@@ -3,7 +3,7 @@
   "modulo": "contagem",
   "pastasPermitidas": [
     "src/modules/contagem/",
-    "src/app/contagem/",
+    "src/app/(app)/contagens/",
     "tests/modules/contagem/"
   ],
   "testes": ["tests/modules/contagem"]

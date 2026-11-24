@@ -3,7 +3,7 @@
   "modulo": "importacao",
   "pastasPermitidas": [
     "src/modules/importacao/",
-    "src/app/importar/",
+    "src/app/(app)/importar/",
     "tests/modules/importacao/"
   ],
   "testes": ["tests/modules/importacao"]

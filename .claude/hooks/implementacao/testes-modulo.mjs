@@ -42,6 +42,12 @@ if (r.status === 0 || /No test files found/i.test(saida)) process.exit(0);
 
 const fim = saida.trim().split("\n").slice(-25).join("\n");
 const quando = modo === "stop" ? "Não encerre ainda: " : "";
+if (/reading 'config'/.test(saida)) {
+  const nomes = Object.keys(process.env).sort().join(" ");
+  process.stderr.write(
+    `[diagnóstico] cwd=${process.cwd()} node=${process.version} env=${nomes}\n`,
+  );
+}
 process.stderr.write(
   `${quando}os testes de ${config.modulo} estão falhando (${pastas.join(", ")}). Corrija antes de continuar.\n${fim}\n`,
 );

@@ -47,6 +47,18 @@ Vale para todo o projeto. Itens marcados como "recomendado" são opcionais.
   e no hook de PostToolUse.
 - Todo bug vira teste de regressão ANTES da correção; cobertura é guia, não meta.
 
+## Interface (decisão do usuário, 2026-11-24)
+
+- Layout clean e moderno, paleta natural **off-white + verde sálvia** (sem cinzas):
+  fundo `#FAF8F3` (creme), texto `#2F3A2F` (verde quase preto), bordas `#E4E0D5` (areia),
+  ação principal `#5B7F5E` (sálvia), erro `#B54A3C`, aviso `#B7862B`.
+- Navegação por **menu lateral** fixo à esquerda (desktop). No celular, **barra de menu fixa embaixo** (bottom nav): Estoque, Contagens, Requisições, Histórico e "Mais" (Lojas, Produtos, Sair); ícone + texto curto, área de toque ≥ 44px.
+- Menu agrupado em dois módulos (decisão do usuário, 2026-11-24; só navegação, o código segue por módulo): **Estoque** (Estoque atual, Contagens, Requisições, Histórico) e **Cadastro** (Produtos, Lojas). No celular, o "Mais" mostra o grupo Cadastro e Sair.
+- Só a cor sálvia como destaque; o resto em creme/areia/verde-escuro.
+- Sem firulas: nada de gradientes, sombras fortes, animações decorativas, ícones em excesso ou muitas cores.
+- Cor só com significado (erro, aviso, sucesso), sempre acompanhada de texto.
+- Muito espaço em branco, tipografia legível, mobile primeiro (320px).
+
 ## Git e entrega
 
 - Conventional Commits; PRs pequenos; CHANGELOG atualizado.

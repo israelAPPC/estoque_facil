@@ -3,7 +3,7 @@
   "modulo": "lojas",
   "pastasPermitidas": [
     "src/modules/lojas/",
-    "src/app/lojas/",
+    "src/app/(app)/lojas/",
     "tests/modules/lojas/"
   ],
   "testes": ["tests/modules/lojas"]

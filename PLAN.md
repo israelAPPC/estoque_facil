@@ -14,7 +14,7 @@ Sprints concluídas vão para `docs/plan-arquivo.md`.
 
 - Agent: DB (Supabase/Postgres)
 - Input: SPEC.md; projeto Supabase criado pelo usuário seguindo o guia
-- Output: `docs/supabase-passo-a-passo.md` (criar projeto, copiar URL e chaves, preencher `.env`, rodar migração) e `supabase/migrations/0001_schema.sql` com as tabelas `lojas`, `produtos`, `contagens`, `contagem_itens`, `requisicoes`, `requisicao_itens` e `estoque_atual` (loja_id, produto_id, quantidade_unidades), RLS ativado em todas, política "só usuário autenticado". Quantidades sempre em unidades.
+- Output: `docs/supabase-passo-a-passo.md` (criar projeto, copiar URL e chaves, preencher `.env`, rodar migração) e `supabase/migrations/0001_schema.sql` com as tabelas `lojas`, `produtos`, `contagens`, `contagem_itens`, `requisicoes`, `requisicao_itens` e `estoque_atual` (loja_id, produto_id, quantidade_unidades), RLS ativado em todas, política "só usuário autenticado". Quantidades sempre em unidades. Decidido em 2026-11-24: `estoque_atual` é só leitura para `authenticated` (saldo muda só por função SQL transacional); contagem editável só com status `rascunho`, confirmada imutável; lojas e produtos têm coluna `ativo` (desativar, sem exclusão física); escolha manter/zerar omitidos vale para a contagem toda; contagens e movimentos guardam timestamp (data e hora).
 - Testes críticos:
   - [ ] Usuário autenticado lê e grava nas tabelas
   - [ ] Cliente anônimo (chave pública, sem login) é bloqueado por RLS em todas as tabelas
@@ -26,27 +26,27 @@ Sprints concluídas vão para `docs/plan-arquivo.md`.
 - Input: nenhum
 - Output: `src/modules/produtos/unidades.ts` com `paraUnidades(caixas: number, unidades: number, fator: number): number` e `paraCaixas(total: number, fator: number): { caixas: number; unidades: number }`; `tests/modules/produtos/unidades.test.ts`
 - Testes críticos:
-  - [ ] 3 caixas + 10 un com fator 24 = 82; e 82 com fator 24 = 3 caixas + 10 un
-  - [ ] Fator zero, negativo ou não inteiro lança erro tipado; quantidade negativa é rejeitada
+  - [x] 3 caixas + 10 un com fator 24 = 82; e 82 com fator 24 = 3 caixas + 10 un
+  - [x] Fator zero, negativo ou não inteiro lança erro tipado; quantidade negativa é rejeitada
 
 #### Task 1.3 — Cálculo de saldo
 
 - Agent: Estoque
 - Input: nenhum
-- Output: `src/modules/estoque/saldo.ts` com `calcularSaldo(base: { data: string; quantidade: number } | null, movimentos: { data: string; delta: number }[]): number`, onde o saldo é a contagem-base mais os movimentos com data posterior à base; `tests/modules/estoque/saldo.test.ts`
+- Output: `src/modules/estoque/saldo.ts` com `calcularSaldo(base: { data: string; quantidade: number } | null, movimentos: { data: string; delta: number }[]): number`, onde o saldo é a contagem-base mais os movimentos com data posterior à base (`data` é timestamp ISO com hora, decidido em 2026-11-24: entra só o movimento com instante estritamente posterior ao da contagem); `tests/modules/estoque/saldo.test.ts`
 - Testes críticos:
-  - [ ] Com contagem-base, só movimentos posteriores à base entram no saldo
-  - [ ] Movimento retroativo (data anterior à base) é ignorado no saldo
-  - [ ] Sem contagem-base, o saldo é a soma dos movimentos; saldo negativo é devolvido sem erro
+  - [x] Com contagem-base, só movimentos posteriores à base entram no saldo
+  - [x] Movimento retroativo (data anterior à base) é ignorado no saldo
+  - [x] Sem contagem-base, o saldo é a soma dos movimentos; saldo negativo é devolvido sem erro
 
 #### Task 1.4 — Comparação de contagens
 
 - Agent: Contagem
 - Input: nenhum
-- Output: `src/modules/contagem/comparar.ts` com `compararContagens(atual: ItemContado[], anterior: ItemContado[] | null): Diferenca[]`, onde cada diferença traz produto, anterior, atual e delta; `tests/modules/contagem/comparar.test.ts`
+- Output: `src/modules/contagem/comparar.ts` com `compararContagens(atual: ItemContado[], anterior: ItemContado[] | null): Diferenca[]`, onde cada diferença traz produto, anterior, atual e delta (produto presente só na anterior aparece marcado como "omitido", sem delta, até o usuário escolher manter ou zerar; decidido em 2026-11-24); `tests/modules/contagem/comparar.test.ts`
 - Testes críticos:
-  - [ ] Delta correto por produto (atual 82, anterior 100 → -18); produto novo tem anterior 0
-  - [ ] Sem contagem anterior, devolve as diferenças marcadas como "inicial"; as listas de entrada não são alteradas
+  - [x] Delta correto por produto (atual 82, anterior 100 → -18); produto novo tem anterior 0
+  - [x] Sem contagem anterior, devolve as diferenças marcadas como "inicial"; as listas de entrada não são alteradas
 
 **Critério de conclusão da fase:** `npx vitest run tests/modules/produtos tests/modules/estoque tests/modules/contagem` passa, e `npm run test:db` (testes da Task 1.1 contra o Supabase) passa.
 
@@ -59,10 +59,10 @@ Sprints concluídas vão para `docs/plan-arquivo.md`.
 
 - Agent: Autenticação
 - Input: schema aplicado e `.env` preenchido
-- Output: `src/middleware.ts` (redireciona não logado para `/login`), `src/app/login/page.tsx`, `src/modules/autenticacao/sessao.ts` com `obterUsuario()`; `docs/modulos/autenticacao.md`
+- Output: `src/proxy.ts` (nome novo do middleware no Next.js; decisão 2026-11-24) (redireciona não logado para `/login`), `src/app/login/page.tsx`, `src/modules/autenticacao/sessao.ts` com `obterUsuario()`; `docs/modulos/autenticacao.md`
 - Testes críticos:
   - [ ] Login com e-mail e senha corretos cria sessão e redireciona para a página inicial
-  - [ ] Acesso sem sessão a qualquer rota protegida redireciona para `/login`; senha errada mostra mensagem genérica, sem detalhe do erro
+  - [x] Acesso sem sessão a qualquer rota protegida redireciona para `/login`; senha errada mostra mensagem genérica, sem detalhe do erro
 
 #### Task 2.2 — Lojas
 
@@ -70,8 +70,8 @@ Sprints concluídas vão para `docs/plan-arquivo.md`.
 - Input: schema aplicado; sessão disponível
 - Output: `src/modules/lojas/servico.ts` (`listarLojas`, `criarLoja`, `editarLoja`), `src/app/lojas/page.tsx`; `docs/modulos/lojas.md`
 - Testes críticos:
-  - [ ] Criar loja com nome válido grava a loja e ela aparece na listagem
-  - [ ] Nome vazio ou duplicado é rejeitado com erro de validação
+  - [x] Criar loja com nome válido grava a loja e ela aparece na listagem (unitário; banco real em LOJ-003)
+  - [x] Nome vazio ou duplicado é rejeitado com erro de validação
 
 #### Task 2.3 — Produtos
 
@@ -79,8 +79,16 @@ Sprints concluídas vão para `docs/plan-arquivo.md`.
 - Input: schema aplicado; Task 1.2 concluída
 - Output: `src/modules/produtos/servico.ts` (`listarProdutos`, `criarProduto`, `editarProduto`), `src/app/produtos/page.tsx`; campos: nome, SKU, categoria, estoque mínimo, fator caixa→unidade; `docs/modulos/produtos.md`
 - Testes críticos:
-  - [ ] Produto válido é criado; produto controlado por caixa exige fator maior que 0
-  - [ ] SKU duplicado é rejeitado; estoque mínimo negativo é rejeitado
+  - [x] Produto válido é criado; produto controlado por caixa exige fator maior que 0
+  - [x] SKU duplicado é rejeitado; estoque mínimo negativo é rejeitado
+
+#### Task 2.4 — Produto por loja (decisão do usuário, 2026-11-24)
+
+- Agents: DB (tabela de vínculo `produto_lojas` com RLS), depois Produtos (checkboxes no cadastro)
+- Regra: no cadastro do produto, checkboxes marcam em quais lojas ele existe; produto novo vem com todas as lojas marcadas; o produto só aparece nas lojas marcadas em contagem, requisição e estoque
+- Testes críticos:
+  - [ ] Produto novo é vinculado a todas as lojas ativas; desmarcar uma loja remove o vínculo
+  - [ ] Listagem de produtos por loja devolve só os vinculados àquela loja
 
 **Critério de conclusão da fase:** `npx vitest run tests/modules/autenticacao tests/modules/lojas tests/modules/produtos` passa e `npm run build` termina sem erro.
 

@@ -7,6 +7,8 @@ docs/               # documentação
   adr/              # decisões de arquitetura
 src/
   app/              # rotas e páginas (App Router); /health
+    (app)/          # route group das áreas logadas (layout com menu lateral); páginas dos módulos entram aqui
+  components/       # componentes compartilhados: menu-lateral (desktop), barra-inferior (celular), navegacao.ts, ui/ (Botao, Campo, Aviso)
   lib/              # utilitários (env.ts)
   modules/          # um subdiretório por módulo do SPEC
     autenticacao/ lojas/ produtos/ importacao/

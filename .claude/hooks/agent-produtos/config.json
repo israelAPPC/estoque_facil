@@ -3,7 +3,7 @@
   "modulo": "produtos",
   "pastasPermitidas": [
     "src/modules/produtos/",
-    "src/app/produtos/",
+    "src/app/(app)/produtos/",
     "tests/modules/produtos/"
   ],
   "testes": ["tests/modules/produtos"]

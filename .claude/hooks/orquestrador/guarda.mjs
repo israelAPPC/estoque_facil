@@ -15,9 +15,20 @@ const ferramenta = entrada.tool_name;
 const params = entrada.tool_input ?? {};
 if (!ferramenta)
   bloquear("entrada do hook ilegível; falhando fechado por segurança.");
-
+// Chamadas de subagent trazem agent_id; a guarda vale só para o orquestrador (sessão principal).
+if (entrada.agent_id) process.exit(0);
 if (ferramenta === "Bash") {
   const comando = String(params.command ?? "").trim();
+  // Git local liberado só para o orquestrador (decisão do usuário, 2026-11-24).
+  // Push, reset, rebase e similares continuam proibidos pelo _lib.mjs.
+  const GIT_LOCAL = [
+    /^git\s+(status|diff|log|branch\s+--show-current)(\s+[^;&|><`$]+)?$/,
+    /^git\s+check-ignore(\s+[^;&|><`$]+)?$/,
+    /^git\s+add\s+-A$/,
+    /^git\s+commit\s+-m\s+"[^"$`]+"$/,
+  ];
+  if (!ENCADEAMENTO.test(comando) && GIT_LOCAL.some((r) => r.test(comando)))
+    process.exit(0);
   const proibido = comandoProibido(comando);
   if (proibido)
     bloquear(`o orquestrador não pode rodar este comando: ${proibido}.`);

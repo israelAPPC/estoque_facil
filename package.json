@@ -13,15 +13,15 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:db": "vitest run --config vitest.db.config.ts"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged && npm run typecheck"
   },
-  "lint-staged": {
-    "*.{ts,tsx,js,mjs,json,css}": "biome check --write --no-errors-on-unmatched"
-  },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.2",
     "next": "^16.4.6",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

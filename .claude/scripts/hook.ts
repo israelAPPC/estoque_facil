@@ -88,13 +88,14 @@ function worker() {
       "--origem",
       origem,
     ],
-    { encoding: "utf8", env: process.env },
+    { encoding: "utf8", env: process.env, windowsHide: true },
   );
   const arquivo = r.stdout?.trim().split("\n").pop();
   if (r.status === 0 && arquivo)
     spawnSync(process.execPath, [aqui("./embed.ts"), arquivo], {
       encoding: "utf8",
       env: process.env,
+      windowsHide: true,
     });
 }
 
