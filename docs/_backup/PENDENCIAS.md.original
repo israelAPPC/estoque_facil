@@ -1,0 +1,25 @@
+# Pendências
+
+- [ ] Pre-commit (simple-git-hooks + lint-staged) está configurado no package.json, mas só ativa depois de `git init` e `npx simple-git-hooks`. A pasta ainda não é um repositório Git.
+- [ ] SheetJS (importação, Sprint 2): o pacote `xlsx` do npm está desatualizado; instalar a versão oficial pelo site da SheetJS e conferir a data de publicação.
+- [ ] CSP (Content-Security-Policy) ainda não configurada em `next.config.mjs`; só os cabeçalhos básicos.
+- [ ] `/ready` (recomendado em docs/padroes.md) não criado.
+- [ ] CLAUDE.md: nomenclatura de arquivos, funções, endpoints e componentes ainda "a definir"; cobertura mínima de testes ainda "a definir".
+- [x] Hooks de agents criados (docs/hooks.md); bloqueio de `git push`/`rm -rf` incluído.
+- [ ] Hooks só testados com entrada simulada; validar numa sessão real de subagent (variável `$CLAUDE_PROJECT_DIR` e `Stop` em frontmatter no Windows).
+- [ ] Rules com `paths:`: a documentação não confirma se subagents customizados as recebem no início ou só ao tocar arquivos que casam; conferir com `/context` na primeira task real.
+- [ ] OpenCode não carrega rules por pasta: `.opencode/instrucoes/*/AGENTS.md` (gerados de `.claude/rules/`) entram todos sempre. Se pesar, reduzir a lista em `opencode.json`. Ao mudar uma rule, regerar a cópia.
+- [ ] Hook global de PostToolUse (lint/tipos para a sessão principal) não criado: deixado para a etapa 10 (rules/segurança).
+- [ ] Plugin OpenCode (`.opencode/plugin/agent-hooks.ts`) não executado; sem escopo por agent.
+- [x] `@code-reviewer` criado (`.claude/agents/code-reviewer.md`).
+- [ ] Agents em `.gemini/agents/`: nomes de tools e de modelo (gemini-2.5-*) não verificados; Antigravity sem formato de agents verificado.
+- [ ] Agents nunca foram executados numa task real; ajustar prompts após a primeira Fase.
+- [ ] Squads externos ficam fora do projeto (caminho absoluto em docs/squads.md).
+- [ ] Orquestrador como agente principal (`"agent": "orquestrador"` em .claude/settings.json) e hooks no frontmatter dele: validar numa sessão real (se o hook de frontmatter roda na sessão principal; se `Agent(...)` restringe a lista; se o modelo Opus é aceito). Se falhar, remover `"agent"` e usar `/agents`.
+- [ ] Comandos em `.claude/commands/` e `.opencode/commands/` nunca executados; `/review` pode colidir com comando embutido. No OpenCode, `default_agent` e `permission.task` do orquestrador não verificados.
+- [ ] code-reviewer não roda mais lint/testes (sem Bash): o orquestrador deve passar o resultado. Gemini/Antigravity não têm agente principal equivalente ao orquestrador.
+- [ ] Orquestrador roda em Opus (custo maior por sessão); trocar para sonnet em `.claude/agents/orquestrador.md` se pesar.
+
+- [ ] RAG: hooks UserPromptSubmit/SubagentStop/SessionEnd testados só com entrada simulada e transcript sintético; validar numa sessão real (campo `agent_transcript_path` do SubagentStop, latência do prompt, qualidade da busca em português com all-MiniLM; calibrar `limiarSimilaridade`).
+- [ ] RAG: usei SessionEnd (e não Stop) para a síntese da sessão, pois Stop dispara a cada resposta; `claude -p` precisa estar acessível (CLAUDE_BIN se não estiver no PATH). Onnxruntime tem postinstall não aprovado (`npm approve-scripts`); funcionou sem ele.
+- [ ] RAG: rag.db no .gitignore (reconstruível a partir de .claude/knowledge/*.md); decidir se os .md de knowledge entram no Git.

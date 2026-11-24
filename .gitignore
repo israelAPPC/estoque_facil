@@ -1,0 +1,54 @@
+# Dependências
+node_modules/
+.pnp.*
+.yarn/
+
+# Build e arquivos gerados
+.next/
+out/
+dist/
+build/
+coverage/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# Segredos e variáveis de ambiente
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# Banco de dados local
+*.sqlite
+*.sqlite3
+
+# Uploads e mídia
+uploads/
+
+# Cache e logs
+.cache/
+tmp/
+logs/
+*.log
+npm-debug.log*
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Local do Claude Code
+.claude/settings.local.json
+
+# RAG local: o banco é reconstruível (node .claude/scripts/embed.ts --reindexar); os .md em .claude/knowledge/ são a fonte
+rag.db
+rag.db-*
+.claude/.cache/

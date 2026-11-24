@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "memoria-projeto": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "--disable-warning=ExperimentalWarning",
+        ".mcp/memoria-projeto/index.ts"
+      ]
+    }
+  }
+}

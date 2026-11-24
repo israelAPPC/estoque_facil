@@ -1,0 +1,10 @@
+{
+  "agente": "agent-importacao",
+  "modulo": "importacao",
+  "pastasPermitidas": [
+    "src/modules/importacao/",
+    "src/app/importar/",
+    "tests/modules/importacao/"
+  ],
+  "testes": ["tests/modules/importacao"]
+}

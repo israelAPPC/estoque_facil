@@ -1,0 +1,10 @@
+{
+  "agente": "agent-requisicoes",
+  "modulo": "requisicoes",
+  "pastasPermitidas": [
+    "src/modules/requisicoes/",
+    "src/app/requisicoes/",
+    "tests/modules/requisicoes/"
+  ],
+  "testes": ["tests/modules/requisicoes"]
+}

@@ -1,0 +1,35 @@
+# Dependências
+node_modules/
+
+# Build e arquivos gerados
+.next/
+out/
+dist/
+build/
+coverage/
+.vercel/
+*.tsbuildinfo
+
+# Segredos e variáveis de ambiente
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# Banco de dados local
+*.sqlite
+*.sqlite3
+
+# Uploads e mídia
+uploads/
+
+# Cache e logs
+.cache/
+tmp/
+logs/
+*.log

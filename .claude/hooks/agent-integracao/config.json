@@ -1,0 +1,12 @@
+{
+  "agente": "agent-integracao",
+  "modulo": "estoque",
+  "pastasPermitidas": [
+    "src/app/",
+    "tests/e2e/",
+    "next.config.mjs",
+    "docs/deploy.md",
+    "docs/modulos/"
+  ],
+  "testes": ["tests/app", "tests/e2e"]
+}

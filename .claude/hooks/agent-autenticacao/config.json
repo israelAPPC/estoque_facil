@@ -1,0 +1,13 @@
+{
+  "agente": "agent-autenticacao",
+  "modulo": "autenticacao",
+  "pastasPermitidas": [
+    "src/modules/autenticacao/",
+    "src/lib/supabase/",
+    "src/proxy.ts",
+    "src/app/login/",
+    "tests/modules/autenticacao/",
+    "tests/lib/"
+  ],
+  "testes": ["tests/modules/autenticacao", "tests/lib"]
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "orquestrador",
+  "instructions": [
+    "CLAUDE.md",
+    ".claude/rules/seguranca.md",
+    ".claude/rules/convencoes-gerais.md",
+    ".claude/rules/pendencias.md",
+    ".opencode/instrucoes/*/AGENTS.md"
+  ],
+  "mcp": {
+    "memoria-projeto": {
+      "type": "local",
+      "command": [
+        "node",
+        "--disable-warning=ExperimentalWarning",
+        ".mcp/memoria-projeto/index.ts"
+      ],
+      "enabled": true
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "agente": "agent-db",
+  "modulo": "estoque",
+  "pastasPermitidas": [
+    "supabase/",
+    "tests/supabase/",
+    "docs/supabase-passo-a-passo.md",
+    ".env.example",
+    "docs/modulos/"
+  ],
+  "testes": ["tests/supabase"]
+}

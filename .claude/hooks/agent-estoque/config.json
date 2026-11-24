@@ -1,0 +1,10 @@
+{
+  "agente": "agent-estoque",
+  "modulo": "estoque",
+  "pastasPermitidas": [
+    "src/modules/estoque/",
+    "src/app/estoque/",
+    "tests/modules/estoque/"
+  ],
+  "testes": ["tests/modules/estoque"]
+}

@@ -1,0 +1,10 @@
+{
+  "agente": "agent-historico",
+  "modulo": "historico",
+  "pastasPermitidas": [
+    "src/modules/historico/",
+    "src/app/historico/",
+    "tests/modules/historico/"
+  ],
+  "testes": ["tests/modules/historico"]
+}

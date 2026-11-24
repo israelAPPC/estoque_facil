@@ -1,0 +1,10 @@
+{
+  "agente": "agent-contagem",
+  "modulo": "contagem",
+  "pastasPermitidas": [
+    "src/modules/contagem/",
+    "src/app/contagem/",
+    "tests/modules/contagem/"
+  ],
+  "testes": ["tests/modules/contagem"]
+}

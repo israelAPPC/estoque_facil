@@ -1,0 +1,19 @@
+{
+  "modelo": "Xenova/all-MiniLM-L6-v2",
+  "dimensoes": 384,
+  "limiarSimilaridade": 0.45,
+  "limiarDuplicado": 0.95,
+  "maxChunksInjetados": 3,
+  "maxCaracteresPorChunk": 600,
+  "chunkCaracteres": { "min": 800, "max": 1200 },
+  "afinidadeCategoria": {
+    "orquestrador": ["decisao", "padrao"],
+    "code-reviewer": ["bug", "nao-funcionou"],
+    "agent-db": ["decisao", "bug"],
+    "padrao": ["padrao", "bug"]
+  },
+  "bonusMesmoAgent": 0.05,
+  "bonusCategoria": 0.03,
+  "modeloResumo": "haiku",
+  "maxCaracteresTranscript": 14000
+}
