@@ -7,7 +7,7 @@ Tipos: VALIDAR · DECISÃO · BUG · DÉBITO · TESTE · FEATURE · IDEIA · VER
 
 ## Resumo
 
-Abertos: 30 (P0: 0 · P1: 5 · P2: 19 · P3: 6)
+Abertos: 33 (P0: 0 · P1: 7 · P2: 20 · P3: 6)
 
 | Módulo | Prefixo | P0 | P1 | P2 | P3 | Total | Detalhe |
 |---|---|---|---|---|---|---|---|
@@ -16,9 +16,10 @@ Abertos: 30 (P0: 0 · P1: 5 · P2: 19 · P3: 6)
 | Importação | IMP | 0 | 0 | 1 | 0 | 1 | [docs/pendencias/imp.md](docs/pendencias/imp.md) |
 | Agents, hooks e comandos | AGT | 0 | 2 | 3 | 2 | 7 | [docs/pendencias/agt.md](docs/pendencias/agt.md) |
 | Outros harnesses (OpenCode, Gemini, Antigravity) | HAR | 0 | 0 | 5 | 2 | 7 | [docs/pendencias/har.md](docs/pendencias/har.md) |
-| Banco de dados | DB | 0 | 1 | 3 | 0 | 4 | [docs/pendencias/db.md](docs/pendencias/db.md) |
+| Banco de dados | DB | 0 | 2 | 3 | 0 | 5 | [docs/pendencias/db.md](docs/pendencias/db.md) |
 | Autenticação | AUT | 0 | 0 | 1 | 0 | 1 | [docs/pendencias/aut.md](docs/pendencias/aut.md) |
 | Lojas | LOJ | 0 | 0 | 2 | 0 | 2 | [docs/pendencias/loj.md](docs/pendencias/loj.md) |
+| Produtos | PRO | 0 | 1 | 2 | 1 | 4 | [docs/pendencias/pro.md](docs/pendencias/pro.md) |
 | Memória (rag.db) | RAG | 0 | 0 | 3 | 1 | 4 | [docs/pendencias/rag.md](docs/pendencias/rag.md) |
 
 ## P0 e P1 por módulo
@@ -36,6 +37,7 @@ Detalhe: [docs/pendencias/seg.md](docs/pendencias/seg.md)
 ### Banco de dados (DB)
 
 - [ ] **P1 · VALIDAR · DB-001** Validar migração 0001 no Supabase de teste: RLS, gravação autenticada e idempotência. (origem: 2026-11-24)
+- [ ] **P1 · VALIDAR · DB-006** Validar migrações 0002, 0003 e 0004 (produto_lojas, trigger de loja e RPCs) no Supabase de teste. (origem: 2026-11-24)
 
 Detalhe: [docs/pendencias/db.md](docs/pendencias/db.md)
 

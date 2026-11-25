@@ -7,6 +7,7 @@ import { criarClienteServidor } from "@/lib/supabase/servidor";
 import { obterUsuario } from "@/modules/autenticacao/sessao";
 import { lerFormularioProduto } from "@/modules/produtos/formulario";
 import {
+  LojasProdutoInvalidasError,
   MENSAGEM_ERRO_GENERICO,
   ProdutoNaoEncontradoError,
   SkuDuplicadoError,
@@ -41,6 +42,9 @@ export async function salvarProdutoAction(
   const { dados: produto, erros } = lerFormularioProduto(dados);
   if (!produto) return { mensagem: null, erros };
 
+  const lojaIds = dados
+    .getAll("lojaIds")
+    .filter((v): v is string => typeof v === "string");
   const entrada = { ...produto, categoria: produto.categoria ?? undefined };
   const idBruto = dados.get("id");
   const id = idBruto ? esquemaId.safeParse(idBruto) : null;
@@ -50,9 +54,12 @@ export async function salvarProdutoAction(
 
   try {
     const repo = await repositorio();
-    if (id?.success) await editarProduto(repo, id.data, entrada);
-    else await criarProduto(repo, entrada);
+    if (id?.success) await editarProduto(repo, id.data, entrada, lojaIds);
+    else await criarProduto(repo, entrada, lojaIds);
   } catch (e) {
+    if (e instanceof LojasProdutoInvalidasError) {
+      return { mensagem: null, erros: { lojaIds: e.message } };
+    }
     if (e instanceof SkuDuplicadoError) {
       return { mensagem: null, erros: { sku: e.message } };
     }

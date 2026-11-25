@@ -86,3 +86,27 @@ export function validarProduto(entrada: EntradaProduto): DadosProduto {
   }
   throw new EntradaProdutoInvalidaError(erros);
 }
+
+export const MENSAGEM_NENHUMA_LOJA = "Marque ao menos uma loja para o produto.";
+
+export class LojasProdutoInvalidasError extends Error {
+  constructor(mensagem: string = MENSAGEM_NENHUMA_LOJA) {
+    super(mensagem);
+    this.name = "LojasProdutoInvalidasError";
+  }
+}
+
+const esquemaLojasProduto = z
+  .array(z.string().uuid())
+  .min(1, MENSAGEM_NENHUMA_LOJA);
+
+/** Exige ao menos uma loja, todas com id válido; remove repetidas. */
+export function validarLojasProduto(ids: readonly string[]): string[] {
+  const r = esquemaLojasProduto.safeParse(ids);
+  if (!r.success) {
+    throw new LojasProdutoInvalidasError(
+      ids.length === 0 ? MENSAGEM_NENHUMA_LOJA : MENSAGEM_ERRO_GENERICO,
+    );
+  }
+  return [...new Set(r.data)];
+}

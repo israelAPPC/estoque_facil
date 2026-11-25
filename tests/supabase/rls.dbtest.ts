@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 // Roda só com `npm run test:db`, contra um projeto Supabase de TESTE.
 // Variáveis vêm do ambiente do shell; este arquivo não lê .env.
@@ -27,6 +27,7 @@ const TABELAS = [
   "requisicoes",
   "requisicao_itens",
   "estoque_atual",
+  "produto_lojas",
 ] as const;
 
 const env = lerAmbiente();
@@ -63,6 +64,8 @@ function corpoValido(
         produto_id: randomUUID(),
         quantidade_unidades: 1,
       };
+    case "produto_lojas":
+      return { produto_id: randomUUID(), loja_id: randomUUID() };
     case "estoque_atual":
       return {
         loja_id: randomUUID(),
@@ -310,5 +313,258 @@ describe("RLS: usuário autenticado", () => {
     expect(troca.status).toBe(200);
     const [depois] = (await troca.json()) as { criado_por: string }[];
     expect(depois?.criado_por).toBe(usuarioId);
+  });
+});
+
+type Linha = Record<string, unknown>;
+
+async function rpc(
+  nome: string,
+  body: unknown,
+  autenticado: boolean,
+): Promise<Response> {
+  return rest(`rpc/${nome}`, { method: "POST", body, autenticado });
+}
+
+describe("produto_lojas e RPCs (migrações 0002 a 0004)", () => {
+  const sufixo = randomUUID().slice(0, 8);
+  const lojasCriadas: string[] = [];
+  const produtosCriados: string[] = [];
+
+  async function novaLoja(rotulo: string): Promise<string> {
+    const l = await inserir<{ id: string }>("lojas", {
+      nome: `Teste PL ${sufixo} ${rotulo}`,
+    });
+    lojasCriadas.push(l.id);
+    return l.id;
+  }
+
+  async function novoProduto(rotulo: string, lojas: string[]): Promise<string> {
+    const r = await rpc(
+      "criar_produto_com_lojas",
+      {
+        p_sku: `PL-${sufixo}-${rotulo}`,
+        p_nome: `Produto PL ${rotulo}`,
+        p_categoria: null,
+        p_fator_caixa: 1,
+        p_estoque_minimo_unidades: 0,
+        p_ativo: true,
+        p_loja_ids: lojas,
+      },
+      true,
+    );
+    expect(r.status, "criar_produto_com_lojas").toBe(200);
+    const id = (await r.json()) as string;
+    produtosCriados.push(id);
+    return id;
+  }
+
+  async function vinculos(produtoId: string): Promise<string[]> {
+    const r = await rest(
+      `produto_lojas?select=loja_id&produto_id=eq.${produtoId}`,
+      { autenticado: true },
+    );
+    expect(r.status).toBe(200);
+    return ((await r.json()) as Linha[]).map((x) => x.loja_id as string);
+  }
+
+  async function definirAtivo(tabela: string, id: string, ativo: boolean) {
+    const r = await rest(`${tabela}?id=eq.${id}`, {
+      method: "PATCH",
+      body: { ativo },
+      autenticado: true,
+    });
+    expect(r.status, `ativo em ${tabela}`).toBe(200);
+  }
+
+  afterAll(async () => {
+    // só dados criados aqui: produtos e lojas ficam inativos (soft delete);
+    // vínculos das lojas de teste são removidos por id.
+    for (const id of produtosCriados) {
+      await rest(`produtos?id=eq.${id}`, {
+        method: "PATCH",
+        body: { ativo: false },
+        autenticado: true,
+      });
+    }
+    for (const id of lojasCriadas) {
+      await rest(`produto_lojas?loja_id=eq.${id}`, {
+        method: "DELETE",
+        autenticado: true,
+      });
+      await rest(`lojas?id=eq.${id}`, {
+        method: "PATCH",
+        body: { ativo: false },
+        autenticado: true,
+      });
+    }
+  });
+
+  it("anon não executa as RPCs", async () => {
+    const chamadas: [string, unknown][] = [
+      [
+        "criar_produto_com_lojas",
+        {
+          p_sku: `ANON-${sufixo}`,
+          p_nome: "Anon",
+          p_categoria: null,
+          p_fator_caixa: 1,
+          p_estoque_minimo_unidades: 0,
+          p_ativo: true,
+          p_loja_ids: [randomUUID()],
+        },
+      ],
+      [
+        "salvar_produto_com_lojas",
+        {
+          p_produto_id: randomUUID(),
+          p_sku: "X",
+          p_nome: "X",
+          p_categoria: null,
+          p_fator_caixa: 1,
+          p_estoque_minimo_unidades: 0,
+          p_loja_ids: null,
+        },
+      ],
+      [
+        "definir_lojas_produto",
+        { p_produto_id: randomUUID(), p_loja_ids: [randomUUID()] },
+      ],
+    ];
+    for (const [nome, body] of chamadas) {
+      const r = await rpc(nome, body, false);
+      expect(BLOQUEIO_PERMISSAO, nome).toContain(r.status);
+    }
+  });
+
+  it("criar com loja inexistente dá 22023 lojas_invalidas e não grava o produto", async () => {
+    const sku = `PL-${sufixo}-inv`;
+    const r = await rpc(
+      "criar_produto_com_lojas",
+      {
+        p_sku: sku,
+        p_nome: "Inválido",
+        p_categoria: null,
+        p_fator_caixa: 1,
+        p_estoque_minimo_unidades: 0,
+        p_ativo: true,
+        p_loja_ids: [randomUUID()],
+      },
+      true,
+    );
+    expect(r.ok).toBe(false);
+    const erro = (await r.json()) as { code?: string; hint?: string };
+    expect(erro.code).toBe("22023");
+    expect(erro.hint).toBe("lojas_invalidas");
+    const busca = await rest(`produtos?select=id&sku=eq.${sku}`, {
+      autenticado: true,
+    });
+    expect((await busca.json()) as Linha[]).toHaveLength(0);
+  });
+
+  it("criar com lista vazia dá 22023", async () => {
+    const r = await rpc(
+      "criar_produto_com_lojas",
+      {
+        p_sku: `PL-${sufixo}-vazio`,
+        p_nome: "Vazio",
+        p_categoria: null,
+        p_fator_caixa: 1,
+        p_estoque_minimo_unidades: 0,
+        p_ativo: true,
+        p_loja_ids: [],
+      },
+      true,
+    );
+    expect(r.ok).toBe(false);
+    expect(((await r.json()) as { code?: string }).code).toBe("22023");
+  });
+
+  it("salvar não altera ativo, devolve a linha e nulo mantém vínculos", async () => {
+    const a = await novaLoja("S-A");
+    const b = await novaLoja("S-B");
+    const produto = await novoProduto("salvar", [a, b]);
+    await definirAtivo("produtos", produto, false);
+
+    const r = await rpc(
+      "salvar_produto_com_lojas",
+      {
+        p_produto_id: produto,
+        p_sku: `PL-${sufixo}-salvar`,
+        p_nome: "Nome novo",
+        p_categoria: "Cat",
+        p_fator_caixa: 12,
+        p_estoque_minimo_unidades: 3,
+        p_loja_ids: null,
+      },
+      true,
+    );
+    expect(r.status).toBe(200);
+    const linha = (await r.json()) as Linha;
+    expect(linha.id).toBe(produto);
+    expect(linha.nome).toBe("Nome novo");
+    expect(linha.fator_caixa).toBe(12);
+    expect(linha.ativo).toBe(false);
+    expect((await vinculos(produto)).sort()).toEqual([a, b].sort());
+  });
+
+  it("vínculo com loja desativada é preservado ao salvar e ao definir sem ela", async () => {
+    const a = await novaLoja("D-A");
+    const b = await novaLoja("D-B");
+    const produto = await novoProduto("desativada", [a, b]);
+    await definirAtivo("lojas", b, false);
+
+    const salvar = await rpc(
+      "salvar_produto_com_lojas",
+      {
+        p_produto_id: produto,
+        p_sku: `PL-${sufixo}-desativada`,
+        p_nome: "Produto PL desativada",
+        p_categoria: null,
+        p_fator_caixa: 1,
+        p_estoque_minimo_unidades: 0,
+        p_loja_ids: [a],
+      },
+      true,
+    );
+    expect(salvar.status).toBe(200);
+    expect((await vinculos(produto)).sort()).toEqual([a, b].sort());
+
+    const definir = await rpc(
+      "definir_lojas_produto",
+      { p_produto_id: produto, p_loja_ids: [a] },
+      true,
+    );
+    expect(definir.ok).toBe(true);
+    expect((await vinculos(produto)).sort()).toEqual([a, b].sort());
+  });
+
+  it("reativar loja vincula produtos ativos sem duplicar; renomear não dispara", async () => {
+    const loja = await novaLoja("R");
+    const produto = await novoProduto("reativar", [loja]);
+
+    // renomear loja ativa não vincula
+    const apaga = await rest(
+      `produto_lojas?produto_id=eq.${produto}&loja_id=eq.${loja}`,
+      { method: "DELETE", autenticado: true },
+    );
+    expect(apaga.ok).toBe(true);
+    const renomeia = await rest(`lojas?id=eq.${loja}`, {
+      method: "PATCH",
+      body: { nome: `Teste PL ${sufixo} R renomeada` },
+      autenticado: true,
+    });
+    expect(renomeia.status).toBe(200);
+    expect(await vinculos(produto)).toEqual([]);
+
+    // desativar não vincula; reativar vincula uma única vez
+    await definirAtivo("lojas", loja, false);
+    expect(await vinculos(produto)).toEqual([]);
+    await definirAtivo("lojas", loja, true);
+    expect(await vinculos(produto)).toEqual([loja]);
+
+    // reativar de novo (já ativa) não duplica nem dá erro
+    await definirAtivo("lojas", loja, true);
+    expect(await vinculos(produto)).toEqual([loja]);
   });
 });

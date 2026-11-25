@@ -9,6 +9,13 @@ Texto completo dos itens abertos. Resumo e P0/P1 em PENDENCIAS.md.
 
 O teste estático (`tests/supabase/migracao-0001.test.ts`) passa, mas o comportamento real só se confirma no banco. Roteiro em docs/validacoes-banco-real.md (seção Banco Supabase de teste): rodar a migração duas vezes e `npm run test:db`.
 
+<a id="db-006"></a>
+### DB-006: Validar migrações 0002, 0003 e 0004 (produto_lojas, trigger de loja e RPCs) no Supabase de teste.
+
+**P1 · VALIDAR** · origem: 2026-11-24
+
+Testes estáticos em `tests/supabase/migracao-0002.test.ts`, `migracao-0003.test.ts` e `migracao-0004.test.ts` passam; falta rodar no banco real. Roteiro em docs/validacoes-banco-real.md. Ao rodar, acrescentar casos de `produto_lojas` em `tests/supabase/rls.dbtest.ts`.
+
 <a id="db-003"></a>
 ### DB-003: Testar no banco que contagem confirmada não pode ser apagada nem ter itens alterados.
 

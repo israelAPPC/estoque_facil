@@ -21,4 +21,7 @@ Pré-requisito de release: AGT-001 e AGT-002 passarem antes do primeiro deploy.
 - Fecha: AGT-002 (e informa AGT-004, AGT-003).
 
 ## Banco Supabase de teste (a preencher na Task 1.1)
+- [ ] DB-006 (0002): rodar `0002_produto_lojas.sql` duas vezes sem erro nem duplicar; anon bloqueado em `produto_lojas`; loja nova recebe os produtos ativos; `definir_lojas_produto` com lista vazia dá erro e com lista parcial remove os desmarcados.
+- [ ] DB-006 (0003): rodar a 0003 duas vezes sem erro; `criar_produto_com_lojas` com loja inexistente dá 23503 e o produto não fica gravado; lista vazia dá 22023; com o produto ligado à loja X e X desativada, `salvar_produto_com_lojas` e `definir_lojas_produto` sem X na lista mantêm o vínculo com X; com X desativada, criar um produto ativo e depois reativar X faz o produto aparecer em X, sem duplicar; anon não consegue executar as RPCs.
+- [ ] DB-006 (0004): rodar a 0004 duas vezes sem erro; só existe uma `salvar_produto_com_lojas` (sem `p_ativo`); salvar um produto desativado não o reativa e a RPC devolve a linha atualizada; `p_loja_ids` nulo mantém os vínculos e vazio dá 22023; loja inexistente ou inativa em criar/salvar/definir dá 22023 com hint `lojas_invalidas` e nada é gravado; inserir loja ativa e reativar loja vinculam os produtos ativos; atualizar loja já ativa (ex. renomear) ou inserir loja inativa não dispara vínculo; anon não executa as RPCs.
 - [ ] Cliente anônimo bloqueado por RLS em todas as tabelas; usuário autenticado lê e grava; migração idempotente (testes críticos da Task 1.1).

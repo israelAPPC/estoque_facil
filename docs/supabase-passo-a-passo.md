@@ -48,7 +48,31 @@ Cuidados:
 4. Confira em **Table Editor**: devem existir `lojas`, `produtos`, `contagens`, `contagem_itens`, `requisicoes`, `requisicao_itens` e `estoque_atual`, todas com o selo **RLS enabled**.
 5. Pode rodar o mesmo arquivo de novo sem problema: ele não duplica nada nem dá erro.
 
-Migrações futuras (`0002_...`, `0003_...`) seguem o mesmo caminho, sempre em ordem de número. Nunca edite uma migração que já rodou.
+### 4.1 Aplicar a 0002 (produto por loja)
+
+1. Depois da 0001, abra **SQL Editor** > **New query**.
+2. Copie todo o conteúdo de `supabase/migrations/0002_produto_lojas.sql`, cole e clique em **Run**. Deve aparecer "Success. No rows returned".
+3. Confira em **Table Editor** que existe `produto_lojas` com o selo **RLS enabled**. Se já havia produtos e lojas, cada produto aparece ligado a todas as lojas ativas.
+4. Rodar de novo não duplica nada: o arquivo inteiro roda numa transação só e, se algo falhar, nada é gravado.
+
+### 4.2 Aplicar a 0003 (ajustes de produto por loja)
+
+1. Depois da 0002, abra **SQL Editor** > **New query**.
+2. Copie todo o conteúdo de `supabase/migrations/0003_produto_lojas_ajustes.sql`, cole e clique em **Run**. Deve aparecer "Success. No rows returned".
+3. Em **Database** > **Functions**, confira que aparecem `criar_produto_com_lojas` e `salvar_produto_com_lojas`.
+4. Pode rodar de novo sem problema: o arquivo só recria funções e o gatilho, sem mexer nos dados.
+
+### 4.3 Aplicar a 0004 (corridas em produto por loja)
+
+Atenção: aplique a 0004 só quando a versão do app que já usa a nova `salvar_produto_com_lojas` (sem o campo "ativo") estiver publicada; senão a edição de produto passa a dar erro.
+
+1. Depois da 0003, abra **SQL Editor** > **New query**.
+2. Copie todo o conteúdo de `supabase/migrations/0004_produto_lojas_corridas.sql`, cole e clique em **Run**. Deve aparecer "Success. No rows returned".
+3. Em **Database** > **Functions**, confira que só existe UMA `salvar_produto_com_lojas` (a antiga foi apagada).
+4. Em **Database** > **Triggers**, confira que em `lojas` aparecem `lojas_vincular_produtos_insert` e `lojas_vincular_produtos_reativar` (e não mais `lojas_vincular_produtos`).
+5. Pode rodar de novo sem problema: só recria funções e gatilhos, sem mexer nos dados.
+
+Migrações futuras (`0005_...`) seguem o mesmo caminho, sempre em ordem de número. Nunca edite uma migração que já rodou.
 
 ## 5. Criar o primeiro usuário
 

@@ -17,9 +17,21 @@ export interface ValoresProduto {
   fatorCaixa: number;
   minimoCaixas: number;
   minimoUnidades: number;
+  lojaIdsMarcadas: string[];
 }
 
-export function FormularioProduto({ valores }: { valores: ValoresProduto }) {
+export interface OpcaoLoja {
+  id: string;
+  nome: string;
+}
+
+export function FormularioProduto({
+  valores,
+  lojas,
+}: {
+  valores: ValoresProduto;
+  lojas: OpcaoLoja[];
+}) {
   const [estado, acao, pendente] = useActionState(
     salvarProdutoAction,
     ESTADO_INICIAL,
@@ -80,6 +92,29 @@ export function FormularioProduto({ valores }: { valores: ValoresProduto }) {
             erro={e.minimoUnidades ?? e.estoqueMinimo}
           />
         </div>
+      </fieldset>
+      <fieldset
+        className="flex flex-col gap-2"
+        aria-describedby={e.lojaIds ? "erro-lojaIds" : undefined}
+      >
+        <legend className="font-medium">Lojas onde o produto existe</legend>
+        {lojas.map((l) => (
+          <label key={l.id} className="flex min-h-11 items-center gap-3">
+            <input
+              type="checkbox"
+              name="lojaIds"
+              value={l.id}
+              defaultChecked={valores.lojaIdsMarcadas.includes(l.id)}
+              className="size-5"
+            />
+            {l.nome}
+          </label>
+        ))}
+        {e.lojaIds ? (
+          <p id="erro-lojaIds" role="alert" className="text-erro">
+            {e.lojaIds}
+          </p>
+        ) : null}
       </fieldset>
       <div className="flex gap-3">
         <Botao type="submit" disabled={pendente}>

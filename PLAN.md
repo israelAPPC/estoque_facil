@@ -87,8 +87,8 @@ Sprints concluídas vão para `docs/plan-arquivo.md`.
 - Agents: DB (tabela de vínculo `produto_lojas` com RLS), depois Produtos (checkboxes no cadastro)
 - Regra: no cadastro do produto, checkboxes marcam em quais lojas ele existe; produto novo vem com todas as lojas marcadas; o produto só aparece nas lojas marcadas em contagem, requisição e estoque
 - Testes críticos:
-  - [ ] Produto novo é vinculado a todas as lojas ativas; desmarcar uma loja remove o vínculo
-  - [ ] Listagem de produtos por loja devolve só os vinculados àquela loja
+  - [x] Produto novo é vinculado a todas as lojas ativas; desmarcar uma loja remove o vínculo
+  - [x] Listagem de produtos por loja devolve só os vinculados àquela loja
 
 **Critério de conclusão da fase:** `npx vitest run tests/modules/autenticacao tests/modules/lojas tests/modules/produtos` passa e `npm run build` termina sem erro.
 

@@ -14,11 +14,21 @@ import {
 
 function repo(sobrescrever: Partial<RepositorioProdutos> = {}) {
   const base: RepositorioProdutos = {
-    inserir: vi.fn(async (d) => ({ id: "1", ativo: true, ...d })),
-    atualizar: vi.fn(async (id, d) => ({ id, ativo: true, ...d })),
+    criarComLojas: vi.fn(async (d) => ({ id: "1", ativo: true, ...d })),
+    salvarComLojas: vi.fn(async (id, d) => ({ id, ativo: true, ...d })),
     definirAtivo: vi.fn(async () => undefined),
     listar: vi.fn(async () => ({ itens: [], total: 0 })),
     obterProduto: vi.fn(async () => null),
+    listarLojasAtivas: vi.fn(async () => [
+      {
+        id: "11111111-1111-4111-8111-111111111111",
+        nome: "11111111-1111-4111-8111-111111111111",
+      },
+    ]),
+    listarIdsLojasDoProduto: vi.fn(async () => [
+      "11111111-1111-4111-8111-111111111111",
+    ]),
+    listarPorLoja: vi.fn(async () => ({ itens: [], total: 0 })),
   };
   return { ...base, ...sobrescrever };
 }
@@ -36,15 +46,17 @@ describe("criarProduto", () => {
     const r = repo();
     const p = await criarProduto(r, valido);
     expect(p.sku).toBe("ref-2l");
-    expect(r.inserir).toHaveBeenCalledWith(
+    expect(r.criarComLojas).toHaveBeenCalledWith(
       expect.objectContaining({ fatorCaixa: 6, estoqueMinimo: 12 }),
+      expect.any(Array),
     );
   });
   it("sem caixa informada usa fator 1", async () => {
     const r = repo();
     await criarProduto(r, { ...valido, fatorCaixa: undefined });
-    expect(r.inserir).toHaveBeenCalledWith(
+    expect(r.criarComLojas).toHaveBeenCalledWith(
       expect.objectContaining({ fatorCaixa: 1 }),
+      expect.any(Array),
     );
   });
   it.each([0, -3, 2.5])("fator %s é rejeitado", async (fator) => {
@@ -74,7 +86,7 @@ describe("criarProduto", () => {
   });
   it("SKU duplicado vira erro tipado com mensagem amigável", async () => {
     const r = repo({
-      inserir: vi.fn(async () => {
+      criarComLojas: vi.fn(async () => {
         throw new SkuDuplicadoError();
       }),
     });
@@ -100,7 +112,7 @@ describe("editarProduto", () => {
     await expect(editarProduto(r, "9", valido)).rejects.toBeInstanceOf(
       EntradaProdutoInvalidaError,
     );
-    expect(r.atualizar).not.toHaveBeenCalled();
+    expect(r.salvarComLojas).not.toHaveBeenCalled();
   });
 });
 
